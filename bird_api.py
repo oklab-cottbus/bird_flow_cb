@@ -1,4 +1,9 @@
+import time
+import json
+import getopt
+import sys 
 import requests
+import os
 
 def get_validate_token(email):
 
@@ -11,16 +16,9 @@ def get_validate_token(email):
     
     body = {"email":email}
 
+    print(body)
     r = requests.post(apiaddress,json=body,headers=headers)
-    print(r.text)
-    try:
-        if(r.json()["validation_required"]):
-            print("Check your mail. This only works if you already have an account")
-            return(True)
-    
-    except Exception as e:
-        print("Something went wrong")
-        return(False)
+    return(r)
 
 def use_magiclink(token):
 
@@ -36,10 +34,24 @@ def use_magiclink(token):
 
     r = requests.post(apiaddress,json=body,headers=headers)
 
+    return(r)
 
-    print(r.text)
+def update_accesstoken(refresh_token):
 
-    return
+    apiaddress = "https://api-auth.prod.birdapp.com/api/v1/auth/refresh/token"
+
+    headers = {
+            "User-Agent":"Bird/4.119.0(co.bird.Ride; build:3; iOS 14.3.0) Alamofire/5.2.2",
+            "Device-Id":"0c571d30-2c0c-4cf7-8487-7dda9bc52af6",
+            "Platform":"ios",
+            "App-Version":"4.119.0",
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + refresh_token}
+
+    r = request.post(apiaddress,headers=headers)
+
+    return(r)
+
 def get_locations(lat,lon,radius,access_token):
 
     apiaddress = "https://api-bird.prod.birdapp.com/bird/nearby?latitude="+lat+"&longitude="+lon+"&radius="+radius
@@ -54,5 +66,56 @@ def get_locations(lat,lon,radius,access_token):
 
     r = requests.get(apiaddress,headers=headers)
 
-    print(r.text)
     return(r)
+
+
+if __name__ == "__main__":
+
+    mail =""
+    vali_token =""
+    argv = sys.argv[1:]
+    
+    try:
+        options, args = getopt.getopt(argv, "m:t:",
+                                   ["mail",
+                                    "validation-token"])
+    except:
+        print("unkown Arguments. Try -mail or -validation-token")
+     
+    for name, value in options:
+        if name in ['-m', '--mail']:
+            mail = value
+        elif name in ['-t', '--validation-token']:
+            vali_token = value
+    
+    if mail != "":
+        response = get_validate_token(mail)
+        if response.status_code == 200:
+            vali_token = input("Enter validation-token")
+        else:
+            print(response.text)
+    
+    if vali_token !="":
+    
+        response = use_magiclink(vali_token)
+        
+        if response.status_code == 200:
+            print(response.text)
+            with open("tokens.json","w") as output:
+                json.dump(response.json(),output)
+        else:
+            print(response.text)
+
+    with open("tokens.json","r") as jsoninput:
+            tokens = jsoninput.read()
+
+    access_token = json.loads(tokens)["access"]
+    refresh_token = json.loads(tokens)["refresh"]
+   
+    current_locations = get_locations(lat="51.7567447",lon="14.3357307",radius = "5000", access_token = access_token)
+    if current_locations.status_code == 200:
+        with open("database/output_"+str(round(time.time()))+".json","w") as output:
+            json.dump(current_locations.json(), output)
+    else:
+        print(current_locations.text)
+
