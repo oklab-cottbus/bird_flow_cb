@@ -3,7 +3,21 @@
 Logging and analyzing the flow of bird scooters in cottbus
 
 
-## Usage:
+## Usage
+
+run
+```
+python3 bird_api.py -m yourmail@address.com
+```
+
+this will create access and refresh tokens. After that you can use:
+
+```
+pyhton3 bird_api.py
+```
+for requesting and saving Cottbus based bird scooter locations and metadata to `output_timestamp.json`
+
+## Explaination:
 
 all explained here in detail https://github.com/ubahnverleih/WoBike/blob/master/Bird.md
 
@@ -24,3 +38,6 @@ all explained here in detail https://github.com/ubahnverleih/WoBike/blob/master/
 
 - bird_api.get_locations(lat,lon,radius,access_token)
 
+### refresh tokens when accesstoken is expired
+
+- update_accesstoken(refresh_token)
