@@ -15,7 +15,7 @@ this will create access and refresh tokens. After that you can use:
 ```
 pyhton3 bird_api.py
 ```
-for requesting and saving Cottbus based bird scooter locations and metadata to `output_timestamp.json`
+for requesting and saving Cottbus based bird scooter locations and metadata to `database/output_timestamp.json`
 
 ## Explaination:
 
