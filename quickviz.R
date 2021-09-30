@@ -2,7 +2,6 @@ library(ggplot2)
 library(dplyr)
 library(jsonlite)
 library(gganimate)
-library(ggm)
 
 filelist <- list.files("database",full.names = T,pattern = "*.json")
 df_list <- lapply(filelist, function(file){
