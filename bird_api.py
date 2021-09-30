@@ -48,7 +48,7 @@ def update_accesstoken(refresh_token):
             "Content-Type": "application/json",
             "Authorization": "Bearer " + refresh_token}
 
-    r = request.post(apiaddress,headers=headers)
+    r = requests.post(apiaddress,headers=headers)
 
     return(r)
 
@@ -117,5 +117,8 @@ if __name__ == "__main__":
         with open("database/output_"+str(round(time.time()))+".json","w") as output:
             json.dump(current_locations.json(), output)
     else:
-        print(current_locations.text)
-
+        response = update_accesstoken(refresh_token)
+        if response.status_code == 200:
+                    print(response.text)
+                    with open("tokens.json","w") as output:
+                        json.dump(response.json(),output)
