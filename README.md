@@ -1,7 +1,7 @@
 # brid_flow_cb
 
 Logging and analyzing the flow of bird scooters in cottbus
-
+![Density Map](density.webm)
 
 ## Usage
 
