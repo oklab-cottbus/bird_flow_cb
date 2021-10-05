@@ -30,7 +30,7 @@ df_list <- lapply(filelist, function(file){
 df <- do.call(rbind,df_list)
 
 #Filter scooters for simplicity
-df <- df  %>% filter(grepl("F",code))
+#df <- df  %>% filter(grepl("F",code))
 scooter_map <- get_stamenmap(bbox = c(left = min(df$longitude), 
                                              bottom = min(df$latitude), 
                                              right = max(df$longitude), 
@@ -42,11 +42,11 @@ scooter_map <- get_stamenmap(bbox = c(left = min(df$longitude),
 plot <- ggmap(scooter_map)+
   geom_density_2d_filled(df,mapping = aes(x = longitude,y=latitude),alpha = 0.5)+
   geom_point(df, mapping = aes(x = longitude,y=latitude))+
-  geom_text(df,mapping = aes(x= longitude,y=latitude,label = sub("..$","",code)))+
+  #geom_text(df,mapping = aes(x= longitude,y=latitude,label = sub("..$","",code)))+
   labs(title = "{current_frame }")+
   transition_manual(timestamp)+
   theme(legend.position = "none")
-  animate(plot,renderer = av_renderer(file = "density.webm"),width = 500, height = 500, fps = 12,nframes = length(levels(factor(df$timestamp))))
+  animate(plot,renderer = gifski_renderer(file = "density.gif"),width = 800, height = 800, fps = 12,nframes = length(levels(factor(df$timestamp))))
 
   
 ## Amount of scooters tracked
