@@ -18,15 +18,24 @@ getDistance <- function(lat1,lon1,lat2,lon2)
 
 filelist <- list.files("database",full.names = T,pattern = "*.json")
 df_list <- lapply(filelist, function(file){
+  tryCatch({
+  
   json <- read_json(file,simplifyVector = T)
   df <- data.frame(json$birds)
   df$latitude <- df$location$latitude
   df$longitude <- df$location$longitude
   df$location <- NULL
+  df$has_helmet <- NULL
+  df$bounty_id <- NULL
   df$timestamp <- as.POSIXct(as.numeric(sub("\\.json","",sub("\\D*","",file))),origin = "1970-01-01 00:00:00")
   df
+  },
+  error = function(cond){
+    print(cond)
+    NULL
+  })
 })
-
+df_list <- df_list[lengths(df_list) != 0]
 df <- do.call(rbind,df_list)
 
 #Filter scooters for simplicity
@@ -108,3 +117,4 @@ ggplot(df %>% filter(!is.na(nest_id))) +
 ggplot(df) +
   geom_point(aes(x = timestamp,y = code,color = id))+
   theme(legend.position = "none")
+
