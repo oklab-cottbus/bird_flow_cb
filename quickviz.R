@@ -46,8 +46,16 @@ scooter_map <- get_stamenmap(bbox = c(left = min(df$longitude),
                                              top = max(df$latitude)),
                                              zoom = 15, 
                                              maptype = "toner")
+## Densitymap per weekday
+plotlist <- df %>% group_by(Weekday = format(timestamp,"%a")) %>% do(plots=ggmap(scooter_map)+
+                                                           geom_density2d_filled(.,mapping = aes(x = longitude,y = latitude),alpha = 0.5)+
+                                                           ggtitle(unique(.$Weekday)))
+lapply(plotlist[[2]], function(plot){
+  ggsave(filename = paste0(plot$labels$title,".png"),plot = plot,device = "png")
+})
 
-## Desitymap
+
+## Desitymap animation
 plot <- ggmap(scooter_map)+
   geom_density_2d_filled(df,mapping = aes(x = longitude,y=latitude),alpha = 0.5)+
   geom_point(df, mapping = aes(x = longitude,y=latitude))+
